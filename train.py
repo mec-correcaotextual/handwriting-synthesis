@@ -12,7 +12,7 @@ from tensorboardX import SummaryWriter
 from utils import plot_stroke, normalize_data, filter_long_strokes, OneHotEncoder
 from utils import plot_phi, plot_attn_scalar
 from model import HandWritingRNN, HandWritingSynthRNN
-
+from tqdm.notebook import trange
 # ------------------------------------------------------------------------------
 
 
@@ -245,11 +245,12 @@ def train(device, args, data_path="data/"):
     )
 
     best_batch_loss = 1e7
-    for epoch in range(200):
+    for epoch in trange(10):
 
         train_losses = []
         validation_iters = []
         validation_losses = []
+
         for i, (c_seq, x, masks, c_masks) in enumerate(dataloader_train):
 
             # make batch_first = false
@@ -323,7 +324,7 @@ def train(device, args, data_path="data/"):
 
         figs = []
         # save png files of the generated models
-        for i in range(sample_count):
+        for i in trange(sample_count):
             f = plot_stroke(
                 generated_samples[:, i, :].cpu().numpy(),
                 save_name=args.logdir
