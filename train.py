@@ -14,6 +14,9 @@ from utils import plot_phi, plot_attn_scalar
 from model import HandWritingRNN, HandWritingSynthRNN
 from tqdm.notebook import trange
 # ------------------------------------------------------------------------------
+import logging
+
+logging.basicConfig(filename='loss.txt', filemode='w', format='%(asctime)s - %(message)s', level=logging.INFO)
 
 
 class HandWritingData(Dataset):
@@ -98,14 +101,14 @@ def mog_density_2d(x, log_pi, mu, sigma, rho):
     z = (x_c ** 2).sum(dim=2) - 2 * rho * x_c[:, :, 0] * x_c[:, :, 1]
 
     log_densities = (
-        (-z / (2 * (1 - rho ** 2)))
-        - (
-            np.log(2 * math.pi)
-            + sigma[:, :, 0].log()
-            + sigma[:, :, 1].log()
-            + 0.5 * (1 - rho ** 2).log()
-        )
-        + log_pi
+            (-z / (2 * (1 - rho ** 2)))
+            - (
+                    np.log(2 * math.pi)
+                    + sigma[:, :, 0].log()
+                    + sigma[:, :, 1].log()
+                    + 0.5 * (1 - rho ** 2).log()
+            )
+            + log_pi
     )
     # dimensions - log_densities : (n, m)
 
@@ -281,7 +284,8 @@ def train(device, args, data_path="data/"):
             optimizer.step()
 
             # do logging
-            print("{},\t".format(loss))
+
+            logging.info("{},\t".format(loss))
             if i % 10 == 0:
                 writer.add_scalar(
                     "Every_10th_batch_loss", loss, epoch * len(dataloader_train) + i
@@ -291,8 +295,8 @@ def train(device, args, data_path="data/"):
             if loss < best_batch_loss:
                 best_batch_loss = loss
                 model_file = (
-                    model_path
-                    + f"handwriting_{('un' if args.uncond else '')}cond_best.pt"
+                        model_path
+                        + f"handwriting_{('un' if args.uncond else '')}cond_best.pt"
                 )
                 torch.save(model.state_dict(), model_file)
                 optim_file = model_file.split(".pt")[0] + "_optim.pt"
@@ -306,7 +310,7 @@ def train(device, args, data_path="data/"):
         print(f"Average training-loss for epoch {epoch} is: {epoch_avg_loss}")
 
         model_file = (
-            model_path + f"handwriting_{('un' if args.uncond else '')}cond_ep{epoch}.pt"
+                model_path + f"handwriting_{('un' if args.uncond else '')}cond_ep{epoch}.pt"
         )
         torch.save(model.state_dict(), model_file)
         optim_file = model_file.split(".pt")[0] + "_optim.pt"
@@ -328,7 +332,7 @@ def train(device, args, data_path="data/"):
             f = plot_stroke(
                 generated_samples[:, i, :].cpu().numpy(),
                 save_name=args.logdir
-                + "/training_imgs/{}cond_ep{}_{}.png".format(
+                          + "/training_imgs/{}cond_ep{}_{}.png".format(
                     ("un" if args.uncond else ""), epoch, i
                 ),
             )
@@ -346,7 +350,6 @@ def train(device, args, data_path="data/"):
 
 
 def main():
-
     parser = argparse.ArgumentParser(description="Train a handwriting generation model")
     parser.add_argument(
         "--uncond",
