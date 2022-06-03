@@ -248,7 +248,7 @@ def train(device, args, data_path="data/"):
     )
 
     best_batch_loss = 1e7
-    for epoch in trange(10):
+    for epoch in trange(args.n_epoch):
 
         train_losses = []
         validation_iters = []
@@ -372,6 +372,12 @@ def main():
         help="Directory to be used for logging",
         type=str,
         default="runs/test/",
+    )
+    parser.add_argument(
+        "--n_epoch",
+        help="Directory to be used for logging",
+        type=int,
+        default=10,
     )
     parser.add_argument("--n_data", help="count of strokes to take from data", type=int)
 
