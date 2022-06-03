@@ -16,7 +16,7 @@ from tqdm.notebook import trange
 # ------------------------------------------------------------------------------
 import logging
 
-logging.basicConfig(filename='loss.txt', filemode='w', format='%(asctime)s - %(message)s', level=logging.INFO)
+logging.basicConfig(filename='loss.txt', filemode='w', format='%(asctime)s,%(message)s', level=logging.INFO)
 
 
 class HandWritingData(Dataset):
