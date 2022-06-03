@@ -169,7 +169,7 @@ def train(device, args, data_path="data/"):
     )
     os.makedirs(model_path, exist_ok=True)
 
-    strokes = np.load(data_path + "strokes.npy", encoding="latin1")
+    strokes = np.load(data_path + "strokes.npy", encoding="latin1", allow_pickle=True)
     sentences = ""
     with open(data_path + "sentences.txt") as f:
         sentences = f.readlines()
